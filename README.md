@@ -1,6 +1,7 @@
 # VRDL_FineGrainedClassification
 ---
 ## Dataset:
+ 6,033 bird images belonging to 200 bird species
  - 3000 training images
  - 3033 testing images 
  
