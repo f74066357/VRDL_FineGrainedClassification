@@ -18,7 +18,7 @@ Download Link: https://drive.google.com/file/d/1mDNBHSioQdl-bSxkm5ZDfMrG0uxlZdqg
 
 ## My pretrained model 
 
-Download Link: https://drive.google.com/drive/folders/1Ya4QbELLZ2gbe74YOvu4zBU9sCxXOhPZ?usp=sharing
+Download Link: https://drive.google.com/file/d/1JClNRnIEMgT9qQqCeGBS68aSoNSynzIp/view?usp=sharing
 
 ## Inference
     python inference.py  
