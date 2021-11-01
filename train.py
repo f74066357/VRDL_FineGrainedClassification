@@ -1,6 +1,3 @@
-
-import tensorflow as tf
-import numpy as np
 import os
 import cv2
 import math
@@ -8,10 +5,19 @@ import time
 import glob
 import PIL
 import PIL.Image
+import numpy as np
 import matplotlib.pyplot as plt
+import tensorflow as tf
+import tensorflow.keras as keras
+import tensorflow.keras.callbacks
+import tensorflow.keras.backend as backend
+from tensorflow.keras import layers
 from tensorflow.keras.initializers import glorot_normal
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras import layers
+from tensorflow.keras.preprocessing.image import load_img
+from tensorflow.keras.preprocessing.image import img_to_array
+from tensorflow.keras.preprocessing.image import array_to_img
+from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.layers import Flatten, Dense, Dropout, GlobalAvgPool2D
 from tensorflow.keras.layers import Activation, Conv2D, MaxPooling2D
@@ -20,17 +26,6 @@ from tensorflow.keras.applications.vgg19 import VGG19
 from tensorflow.keras.applications.vgg16 import preprocess_input
 from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping
 from tensorflow.keras.callbacks import ModelCheckpoint
-from tensorflow.keras.optimizers import Adam
-import tensorflow.keras.callbacks
-import tensorflow.keras as keras
-import tensorflow.keras.backend as backend
-from tensorflow.keras.preprocessing.image import load_img
-from tensorflow.keras.preprocessing.image import img_to_array
-from tensorflow.keras.preprocessing.image import array_to_img
-import tensorflow.keras.backend as backend
-from tensorflow.keras.preprocessing.image import load_img
-from tensorflow.keras.preprocessing.image import img_to_array
-from tensorflow.keras.preprocessing.image import array_to_img
 
 
 def resize_image(
@@ -111,7 +106,7 @@ def resize_images(images, **kwargs):
 # crop image at the center
 
 
-def center_crop_image(x, size_target=(336, 336)):
+def center_crop_image(x, size_target=(448, 448)):
 
     # convert to numpy array
     if not isinstance(x, np.ndarray):
@@ -143,7 +138,7 @@ def center_crop_image(x, size_target=(336, 336)):
 # crop image of fixed-size from random point of top-left corner
 
 
-def random_crop_image(x, size_target=(336, 336)):
+def random_crop_image(x, size_target=(448, 448)):
 
     # convert to numpy array
     if not isinstance(x, np.ndarray):
@@ -222,13 +217,20 @@ listvalid = []
 trainimg = np.array((glob.glob(train_dir+'/*/*.jpg')))
 validimg = np.array((glob.glob(valid_dir+'/*/*.jpg')))
 
+list_mean_train = np.zeros(3)
+
 for i in range(len(trainimg)):
     path_file = trainimg[i]
     image = PIL.Image.open(path_file)
     image_np = np.array(image)
     image.close()
     listtrain.append(image_np)
+    for dim in range(3):
+        list_mean_train[dim] += image_np[:, :, dim].mean()
 print(len(listtrain))
+list_mean_train /= len(listtrain)
+print(list_mean_train)
+
 
 for i in range(len(validimg)):
     path_file = validimg[i]
@@ -325,8 +327,8 @@ class ImageDataGenerator(keras.preprocessing.image.ImageDataGenerator):
 
 
 def load_data(
-    path_data_train=None, path_data_valid=None, size_width=336,
-    size_heigth=336, size_mini_batch=16, flg_debug=False,
+    path_data_train=None, path_data_valid=None, size_width=448,
+    size_heigth=448, size_mini_batch=16, flg_debug=False,
     **kwargs
 ):
 
@@ -337,16 +339,16 @@ def load_data(
                 resize_image(x, size_target=(
                     size_heigth, size_width), flg_keep_aspect=True)
             )
-        ), mean=[123.82988033, 127.3509729, 110.25606303]
+        ), mean=[122.75444078, 126.8817761, 110.24148476]
     )
 
     def func_valid(x): return normalize_image(
         center_crop_image(
             resize_image(x, size_target=(size_heigth, size_width),
                          flg_keep_aspect=True)
-        ), mean=[125.82988033, 130.3509729, 120.25606303]
+        ), mean=[122.75444078, 126.8817761, 110.24148476]
+
     )
-    
     # set image_data_generator
     gen_train = ImageDataGenerator(
         preprocessing_function=func_train,
@@ -411,7 +413,7 @@ def L2_norm(x, axis=-1):
 
 
 def build_model(
-    size_heigth=336, size_width=336, no_class=200, no_last_layer_backbone=17,
+    size_heigth=448, size_width=448, no_class=200, no_last_layer_backbone=17,
     name_optimizer="sgd", rate_learning=1.0, rate_decay_learning=0.0,
     rate_decay_weight=0.0, name_initializer="glorot_normal",
     name_activation_logits="softmax", name_loss="categorical_crossentropy",
@@ -547,10 +549,10 @@ def build_model(
 
 
 model = build_model(
-    # number of output classes, 200 for CUB200
-    no_class=200,  # pretrained model specification, using VGG16
-    # "block5_conv3 "
-    no_last_layer_backbone=17,  # training parametes
+    no_class=200,  # number of output classes
+    # pretrained model specification, using VGG16 block5_conv3 "
+    no_last_layer_backbone=17,
+    # training parametes
     rate_learning=1.0, rate_decay_weight=1e-8,
     flg_debug=True
 )
@@ -605,10 +607,11 @@ def train_model(
 
     return hist
 
+
 hist = train_model(
-    model=model, name_model='BCNN_keras/1031_4/',
+    model=model, name_model='BCNN_keras/1031_7/',
     gen_dir_train=gen_dir_train, gen_dir_valid=gen_dir_valid,
-    max_epoch=25
+    max_epoch=20
 )
 # now all layers are trainable
 for layer in model.layers:
@@ -626,8 +629,8 @@ model.compile(
     metrics=["categorical_accuracy"]
 )
 hist = train_model(
-    model=model, name_model='BCNN_keras/1031_4/',
+    model=model, name_model='BCNN_keras/1031_7/',
     gen_dir_train=gen_dir_train,
     gen_dir_valid=gen_dir_valid,
-    max_epoch=30
+    max_epoch=35
 )

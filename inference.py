@@ -106,7 +106,7 @@ def resize_images(images, **kwargs):
 # crop image at the center
 
 
-def center_crop_image(x, size_target=(336, 336)):
+def center_crop_image(x, size_target=(448, 448)):
 
     # convert to numpy array
     if not isinstance(x, np.ndarray):
@@ -138,7 +138,7 @@ def center_crop_image(x, size_target=(336, 336)):
 # crop image of fixed-size from random point of top-left corner
 
 
-def random_crop_image(x, size_target=(336, 336)):
+def random_crop_image(x, size_target=(448, 448)):
 
     # convert to numpy array
     if not isinstance(x, np.ndarray):
@@ -290,7 +290,7 @@ class ImageDataGenerator(keras.preprocessing.image.ImageDataGenerator):
 
 def load_data(
     path_data_train=None, path_data_valid=None,
-    size_width=336, size_heigth=336, size_mini_batch=16,
+    size_width=448, size_heigth=448, size_mini_batch=16,
     flg_debug=False, **kwargs
 ):
 
@@ -383,7 +383,7 @@ def L2_norm(x, axis=-1):
 
 
 def build_model(
-    size_heigth=336, size_width=336, no_class=200,
+    size_heigth=448, size_width=448, no_class=200,
     no_last_layer_backbone=17, name_optimizer="sgd", rate_learning=1.0,
     rate_decay_learning=0.0, rate_decay_weight=0.0,
     name_initializer="glorot_normal",
@@ -530,7 +530,7 @@ model = build_model(
 for layer in model.layers:
     layer.trainable = True
 
-model.load_weights('model/BCNN_keras/1031_3/E[30]_LOS[1.395]_ACC[0.667].h5')
+model.load_weights('model/BCNN_keras/1031_7/E[35]_LOS[1.051]_ACC[0.752].h5')
 
 opt_sgd = tf.keras.optimizers.SGD(
     lr=1e-3, decay=1e-9, momentum=0.9, nesterov=False
@@ -582,7 +582,7 @@ for line in f.readlines():
     testorder.append(order)
 f.close()
 
-f = open('model/BCNN_keras/1031_3/answer.txt', 'w')
+f = open('model/BCNN_keras/1031_7/answer.txt', 'w')
 for i in range(len(testorder)):
     fname = testorder[i]
     f.write(fname+' '+dicts[fname]+'\n')
