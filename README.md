@@ -18,13 +18,21 @@ Download Link: https://drive.google.com/file/d/1mDNBHSioQdl-bSxkm5ZDfMrG0uxlZdqg
 
 ## My pretrained model 
 
-Download Link:
+Download Link: https://drive.google.com/drive/folders/1Ya4QbELLZ2gbe74YOvu4zBU9sCxXOhPZ?usp=sharing
 
 ## Inference
-    python inference.py
-
+    python inference.py  
+    
+   Remember to put the download link in correct path.  
+   DEFAULT path : model/BCNN_keras/1031_7/E[35]_LOS[1.051]_ACC[0.752].h5  
+   Or, you can modify line 533 in inference.py to change the default path.
+   
 ## Result
-
+Data      | Loss  | Accuracy | 
+------------  | ----  | ---  | 
+Training set   | 0.017327397 |  0.9975 | 
+Valid set  | 1.050688473 |  0.75166667 |  
+   
 ## Reference:
    - https://github.com/tkhs3/BCNN_keras
    - https://reurl.cc/q1pO2q
