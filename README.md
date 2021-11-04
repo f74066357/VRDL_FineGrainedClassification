@@ -18,7 +18,7 @@ Download Link: https://drive.google.com/file/d/1mDNBHSioQdl-bSxkm5ZDfMrG0uxlZdqg
     conda install pydot
 
 
-## My pretrained model 
+## My pretrained model weight
 
 Download Link: https://drive.google.com/file/d/1JClNRnIEMgT9qQqCeGBS68aSoNSynzIp/view?usp=sharing
 
